@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { AppContext } from "./AppContext";
 import ContentLoader from "react-content-loader";
+import styled from "styled-components";
 
 const SidebarBox = props => {
   const [data, setData] = useState({});
-  const [hover, setHover] = useState(false);
   let { state, dispatch } = React.useContext(AppContext);
 
   useEffect(() => {
@@ -19,36 +19,9 @@ const SidebarBox = props => {
 
   if (data.properties) {
     return (
-      <div
-        style={{
-          width: "calc(300px - 20px)",
-          height: "calc(60px - 1rem)",
-          marginBottom: "10px",
-          padding: "10px",
-          display: "flex",
-          backgroundColor: state.theme === "dark" ? "#6d6d6d" : "#fff",
-          boxShadow: `0 0 ${hover ? "12px" : "6px"} 0 ${
-            state.theme === "dark"
-              ? `rgba(197, 197, 197, ${
-                  hover || props.selected ? "0.3" : "0.1"
-                })`
-              : `rgba(42, 42, 42, ${hover || props.selected ? "0.3" : "0.1"})`
-          }`,
-          border: "1px solid transparent",
-          borderRadius: 4,
-          transition: "box-shadow .1s ease-out",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          alignItems: "center",
-          cursor: "pointer",
-          borderRight: props.selected
-            ? "3px solid #38ed03"
-            : hover
-            ? "3px solid #38ed03"
-            : "none"
-        }}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
+      <SidebarBoxDiv
+        theme={state.theme}
+        selected={false}
         onClick={() => {
           dispatch({ type: "select-box", payload: data });
           dispatch({ type: "selected-box-from-map", payload: false });
@@ -66,7 +39,7 @@ const SidebarBox = props => {
         }}
       >
         {data.properties.name}
-      </div>
+      </SidebarBoxDiv>
     );
   } else {
     return (
@@ -85,3 +58,42 @@ const SidebarBox = props => {
 };
 
 export default SidebarBox;
+
+const SidebarBoxDiv = styled.div`
+  width: 100%;
+  height: calc(60px - 1rem);
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  background-color: ${props => (props.theme === "dark" ? "#6d6d6d" : "#fff")};
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: 0 0 6px 0 rgba(42, 42, 42, 0.1);
+  box-sizing: border-box;
+  transition: box-shadow 0.1s ease-out;
+  overflow: hidden;
+  white-space: nowrap;
+  align-items: center;
+  cursor: pointer;
+  border-right: ${props => (props.selected ? "3px solid #38ed03" : "none")}
+  
+  &:hover {
+    border-right: 3px solid #38ed03;
+    box-shadow: 0 0 12px 0 rgba(42, 42, 42, 0.1);
+  }
+
+  @media (max-width: 500px) {
+    width: 200px;
+    display: block;
+    margin-right: 10px;
+    overflow: visible;
+  }
+`;
+
+// box-shadow: 0 0 ${props => props.hover ? "12px" : "6px"} 0 ${props =>
+//   props.theme === "dark"
+//     ? `rgba(197, 197, 197, ${props =>
+//         props.hover || props.selected ? "0.3" : "0.1"
+//       })`
+//     : `rgba(42, 42, 42, ${props => props.hover || props.selected ? "0.3" : "0.1"})`
+// }`

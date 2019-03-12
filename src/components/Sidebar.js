@@ -3,6 +3,7 @@ import { XCircle, Command } from "react-feather";
 import { AppContext } from "./AppContext";
 import SidebarBox from "./SidebarBox";
 import ContentLoader from "react-content-loader";
+import styled from "styled-components";
 
 const Sidebar = () => {
   const [selected, setSelected] = useState();
@@ -11,20 +12,7 @@ const Sidebar = () => {
   let { state, dispatch } = React.useContext(AppContext);
 
   return (
-    <div
-      style={{
-        position: "absolute",
-        width: "300px",
-        height: "calc(100% - 2rem)",
-        padding: "1rem",
-        background: state.theme === "dark" ? "#4a4a4a" : "#ffffff",
-        color: state.theme === "dark" ? "#fff" : "#000",
-        zIndex: 1,
-        left: visible ? "0" : "calc(-300px - 2rem)",
-        transition: "all 0.3s",
-        overflowY: "scroll"
-      }}
-    >
+    <SidebarDiv theme={state.theme} visible={visible}>
       <Command
         style={{
           float: "left",
@@ -41,7 +29,7 @@ const Sidebar = () => {
       />
       <br />
       {state.auth == null ? <Login /> : <p>Boxes of {state.auth.user.name}</p>}
-      <div style={{ marginTop: 20 }}>
+      <SidebarBoxWrapper>
         {state.boxes.length == 0 && <SkeletonLoader />}
         {state.boxes.map((e, i) => (
           <SidebarBox
@@ -50,8 +38,8 @@ const Sidebar = () => {
             selected={e == state.selectedBox.properties._id}
           />
         ))}
-      </div>
-    </div>
+      </SidebarBoxWrapper>
+    </SidebarDiv>
   );
 };
 
@@ -170,3 +158,33 @@ const SkeletonLoader = () => {
     </ContentLoader>
   );
 };
+
+const SidebarDiv = styled.div`
+  position: absolute;
+  width: 300px;
+  height: calc(100% - 2rem);
+  padding: 1rem;
+  z-index: 1;
+  transition: all 0.3s;
+  overflow-y: scroll;
+  left: ${props => (props.visible ? "0" : "calc(-300px - 2rem)")};
+  background: ${props => (props.theme === "dark" ? "#4a4a4a" : "#ffffff")};
+  color: ${props => (props.theme === "dark" ? "#fff" : "#000")};
+
+  @media (max-width: 500px) {
+    bottom: ${props => (props.visible ? "0" : "calc(-200px - 2rem)")};
+    right: 0;
+    left: 0;
+    height: 200px;
+    width: auto;
+  }
+`;
+
+const SidebarBoxWrapper = styled.div`
+  margintop: 20;
+  @media (max-width: 500px) {
+    display: flex;
+    overflow-x: auto;
+    height: 50%;
+  }
+`;
